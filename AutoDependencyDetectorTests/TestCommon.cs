@@ -94,5 +94,15 @@ namespace AutoDependencyDetectorTests
             // Dir is there and retries have ended
             Assert.Fail($"Failed to delete {directory} multiple times.");
         }
+
+        public List< string > GetFiles( string path, string pattern )
+        {
+            return Directory.GetFiles( Path.Combine( TestData, path ), pattern ).ToList();
+        }
+
+        public string CreateDir( string name )
+        {
+            return Directory.CreateDirectory( Path.Combine( TestData, name ) ).FullName;
+        }
     }
 }

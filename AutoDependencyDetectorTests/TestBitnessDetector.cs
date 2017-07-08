@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoDependencyDetector.Interfaces;
 using AutoDependencyDetector.Logic;
 using NUnit.Framework;
 
@@ -14,19 +15,19 @@ namespace AutoDependencyDetectorTests
         [Test]
         public void Test_Detector_is_able_to_detect_64_bit()
         {
-            var file64Bit = Directory.GetFiles( Path.Combine( TestData, "x64"), "*.exe"  ).First(); // Will fail if nothing is extracted
+            var file64Bit = GetFiles( "x64", "*.exe" ).First(); // Will fail if nothing is extracted
 
             var b = new BitnessDetector();
-            Assert.That( b.BitnessOf(file64Bit), Is.EqualTo( BitnessDetector.Bitness.X64 ) );
+            Assert.That( b.BitnessOf(file64Bit), Is.EqualTo( BitnessType.x64 ) );
         }
 
         [Test]
         public void Test_Detector_is_able_to_detect_32_bit()
         {
-            var file = Directory.GetFiles( Path.Combine( TestData, "x86"), "*.exe"  ).First(); // Will fail if nothing is extracted
+            var file = GetFiles("x86", "*.exe" ).First(); // Will fail if nothing is extracted
 
             var b = new BitnessDetector();
-            Assert.That( b.BitnessOf(file), Is.EqualTo( BitnessDetector.Bitness.X86 ) );
+            Assert.That( b.BitnessOf(file), Is.EqualTo( BitnessType.x86 ) );
         }
     }
 }
