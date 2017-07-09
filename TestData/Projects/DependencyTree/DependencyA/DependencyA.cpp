@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "DependencyA.h"
+#include "DependencyB.h"
 
 DependencyA::DependencyA()
 {
@@ -11,5 +12,6 @@ DependencyA::DependencyA()
 
 std::string DependencyA::WhoAmI()
 {
-    return "I am Dependency A";
+    DependencyB b;
+    return "I am Dependency A "+ b.WhoAmI();
 }
