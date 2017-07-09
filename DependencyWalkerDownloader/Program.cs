@@ -39,6 +39,11 @@ namespace DependencyWalkerDownloader
 
             var path = args[ 0 ];
 
+            if ( Directory.Exists( path ) == false )
+            {
+                Directory.CreateDirectory( path );
+            }
+
             Console.WriteLine( $"Deleting sub directories in {path}" );
             // Make sure this directory is empty
             foreach ( var directoryInfo in new DirectoryInfo(path).GetDirectories() )
