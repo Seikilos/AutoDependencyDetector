@@ -29,6 +29,9 @@ namespace DependencyWalkerDownloader
 
         static void Execute(string[] args)
         {
+
+            Console.WriteLine( "Starting dependency download" );
+
             if ( args.Length != 1 )
             {
                 throw new ArgumentException("First argument must be directory for dependency walker");
@@ -36,6 +39,7 @@ namespace DependencyWalkerDownloader
 
             var path = args[ 0 ];
 
+            Console.WriteLine( $"Deleting sub directories in {path}" );
             // Make sure this directory is empty
             foreach ( var directoryInfo in new DirectoryInfo(path).GetDirectories() )
             {
