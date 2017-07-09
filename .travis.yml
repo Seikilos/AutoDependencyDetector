@@ -7,5 +7,5 @@ install:
 script:
   - xbuild /p:Configuration=DownloadDependencyWalker AutoDependencyDetector.sln
   - xbuild /p:Configuration=Release AutoDependencyDetector.sln
-  - ls -l /DependencyWalkerDownloader/bin/DownloadDependencyWalker/AutoDependencyDetector.exe
+  - ls -l DependencyWalkerDownloader/bin/DownloadDependencyWalker/DependencyWalkerDownloader.exe
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./AutoDependencyDetectorTests/bin/Release/*Tests.dll
