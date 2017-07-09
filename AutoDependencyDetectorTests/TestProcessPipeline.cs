@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoDependencyDetector.Data;
+using AutoDependencyDetector.Exceptions;
 using AutoDependencyDetector.Logic;
 using NUnit.Framework;
 
@@ -102,7 +103,18 @@ namespace AutoDependencyDetectorTests
         [Test]
         public void Test_that_pipeline_throws_if_not_all_dependencies_could_be_resolved()
         {
-            Assert.Fail("TODO");
+            var emptyDir = CreateDir( "empty" );
+            // Set dep dir so that it won't find any dependencies
+            _defaultOptions.DependencyDirectory = emptyDir;
+
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<ProcessPipelineException>() );
+
         }
+
+
+        // TODO: Optimize sweep that it does not look up files again which have all resolved dependencies
+
+        // TODO: Configure filter via configuration
+       
     }
 }

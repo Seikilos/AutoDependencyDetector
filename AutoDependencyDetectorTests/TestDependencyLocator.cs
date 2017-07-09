@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoDependencyDetector.Exceptions;
 using AutoDependencyDetector.Logic;
 using NUnit.Framework;
 
@@ -33,7 +34,7 @@ namespace AutoDependencyDetectorTests
         [Test]
         public void Test_Locator_throws_on_multiple_dependencies()
         {
-           Assert.That( () => _locator.LocateDependencies( new [] { "DependencyA.dll" } ), Throws.Exception );
+           Assert.That( () => _locator.LocateDependencies( new [] { "DependencyA.dll" } ), Throws.TypeOf<DependencyLocatorException>() );
         }
     }
 }

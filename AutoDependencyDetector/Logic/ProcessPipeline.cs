@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoDependencyDetector.Data;
+using AutoDependencyDetector.Exceptions;
 using Newtonsoft.Json;
 
 namespace AutoDependencyDetector.Logic
@@ -93,6 +94,11 @@ namespace AutoDependencyDetector.Logic
             var dl = new DependencyLocator( _options.DependencyDirectory );
 
             var locatedDependencies = dl.LocateDependencies( missingDependencies );
+
+            if ( missingDependencies.Count > 0 && missingDependencies.Count != locatedDependencies.Count )
+            {
+                throw new ProcessPipelineException( $"Not all missing dependencies for {file} could be found: Missing ({missingDependencies.Count}): {string.Join(", ", missingDependencies )}, Found ({locatedDependencies.Count}): {string.Join( ", ",locatedDependencies )}" );
+            }
 
             var destinationDirectory = Path.GetDirectoryName( file );
 

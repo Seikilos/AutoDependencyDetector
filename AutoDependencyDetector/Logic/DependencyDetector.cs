@@ -71,6 +71,7 @@ namespace AutoDependencyDetector.Logic
         /// <returns></returns>
         private static bool FilterMissingDependencies( string line )
         {
+            // TODO: Make this configurable from config
             if ( line.Contains( "API-" ) )
             {
                 return false;

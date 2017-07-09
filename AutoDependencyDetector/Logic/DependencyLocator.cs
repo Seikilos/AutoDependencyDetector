@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoDependencyDetector.Exceptions;
 
 namespace AutoDependencyDetector.Logic
 {
@@ -26,8 +27,18 @@ namespace AutoDependencyDetector.Logic
 
         public Dictionary<string, string> LocateDependencies( IList<string> dependencyNames )
         {
-            // Will fail if key is used twice
-            var allFiles = Directory.GetFiles( DependencyRootDirectory, "*", SearchOption.AllDirectories ).ToDictionary( t => _normalizeDependencyName(Path.GetFileName( t )), t => t );
+            // Fail if key is duplicated
+            var allFiles = new Dictionary<string, string>();
+
+            foreach ( var file in Directory.GetFiles( DependencyRootDirectory, "*", SearchOption.AllDirectories ) )
+            {
+                var key = _normalizeDependencyName( Path.GetFileName( file ) );
+                if ( allFiles.ContainsKey( key ) )
+                {
+                    throw new DependencyLocatorException($"Dependency with the name {file} (handle: {key}) already added. Modules are looked up by their handle therefore it must not be duplicated"  );
+                }
+                allFiles[ key ] = file;
+            }
 
             var results = new Dictionary<string, string>();
 
