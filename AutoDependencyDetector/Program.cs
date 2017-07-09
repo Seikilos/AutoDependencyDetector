@@ -29,8 +29,6 @@ namespace AutoDependencyDetector
                 var p = new ProcessPipeline();
                 p.ExecutePipeline( options );
 
-                _performDetection( options );
-
             }
             catch ( Exception e )
             {

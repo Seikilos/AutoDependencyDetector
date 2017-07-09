@@ -23,16 +23,16 @@ namespace AutoDependencyDetector.Logic
         {
             _options = options;
 
-            var l = new ConsoleLogger();
+           
 
+            Logger.Info( "Starting dependency detection" );
 
-            l.Info( "Starting dependency detection" );
-
-            l.Info( "Analyzing {0}{1}", options.InputDirectory, options.RecurseInput?" and children" : "" );
+            Logger.Info( "Analyzing {0}{1}", options.InputDirectory, options.RecurseInput?" and children" : "" );
             _verifyInputDir(options.InputDirectory);
 
 
             var config = _readConfig( options.Config );
+
             var dependencies = _gatherDependencies( options.InputDirectory, options.RecurseInput , config);
 
 
