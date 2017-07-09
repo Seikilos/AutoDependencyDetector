@@ -28,12 +28,17 @@ namespace AutoDependencyDetector
 
                 var logger = new ConsoleLogger();
 
+                logger.Info( "Starting dependency detection" );
+
+
                 var pathOfDependsRoot = _getDependencyWalkerIfMissing(logger);
 
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
                 var p = new ProcessPipeline(logger,dd);
                 p.ExecutePipeline( options, _readConfig( options.Config ) );
+
+                logger.Info( "Dependency detection finished" );
 
             }
             catch ( Exception e )
@@ -69,7 +74,7 @@ namespace AutoDependencyDetector
             {
                 throw new InvalidOperationException( $"Failed to obtain dependency walker. Expected two executables to find in {finalDir}, found {fileCount}" );
             }
-
+            logger.Info( "Successfully obtain dependency walker" );
 
             return finalDir;
         }

@@ -34,13 +34,11 @@ namespace AutoDependencyDetector.Logic
 
             _options = options;
 
-
-            Logger.Info( "Starting dependency detection" );
-
             Logger.Info( "Analyzing {0}{1}", options.InputDirectory, options.RecurseInput ? " and children" : "" );
 
             _verifyDir( options.InputDirectory, "Input directory" );
             _verifyDir( options.DependencyDirectory, "Dependency directory" );
+
 
 
             // --------- Obtain configuration
@@ -52,41 +50,59 @@ namespace AutoDependencyDetector.Logic
                 Logger.Info( "Starting dependency search sweep {0}/{1}", i+1, _config.HowManyIterations );
 
                 // --------- Get all directories
-                handleDependenciesForDirectories( options );
+                var remainingDependencies = handleDependenciesForDirectories( options );
+                if ( remainingDependencies == 0 )
+                {
+                    break;
+                }
             }
 
+          
         }
 
-        private void handleDependenciesForDirectories( Options options )
+        private int handleDependenciesForDirectories( Options options )
         {
             var directories = _forEveryDirectory( options.InputDirectory, options.RecurseInput );
+
+            var remainingDependencies = 0;
 
             // --------- Read all dependencies
             foreach ( var directory in directories )
             {
-                _handleDependenciesForDirectory( directory );
+                remainingDependencies +=_handleDependenciesForDirectory( directory );
             }
+
+            return remainingDependencies;
         }
 
-        private void _handleDependenciesForDirectory( string directory )
+        private int _handleDependenciesForDirectory( string directory )
         {
+            var remainingDependencies = 0;
             Logger.Info( "Analyzing dependencies in {0}", directory );
 
             var inputs = _gatherInputFiles( directory );
             Logger.Info( "Found {0} input files", inputs.Count );
             foreach ( var input in inputs )
             {
-                _handleDependenciesForFile( input );
+                remainingDependencies += _handleDependenciesForFile( input );
             }
+
+            return remainingDependencies;
         }
 
-        private void _handleDependenciesForFile( string file )
+        private int _handleDependenciesForFile( string file )
         {
             Logger.Info( "Looking for missing dependencies for {0}", file );
 
             var bitness = new BitnessDetector().BitnessOf( file );
 
             var missingDependencies = _detector.GetMissingDependencies( file, bitness );
+
+            if ( missingDependencies.Count == 0 )
+            {
+                Logger.Info( "No missing dependencies found" );
+                return 0;
+            }
 
             Logger.Info( "Found {0} missing dependencies. Resolving", missingDependencies.Count );
 
@@ -95,7 +111,7 @@ namespace AutoDependencyDetector.Logic
 
             var locatedDependencies = dl.LocateDependencies( missingDependencies );
 
-            if ( missingDependencies.Count > 0 && missingDependencies.Count != locatedDependencies.Count )
+            if ( missingDependencies.Count != locatedDependencies.Count )
             {
                 throw new ProcessPipelineException( $"Not all missing dependencies for {file} could be found: Missing ({missingDependencies.Count}): {string.Join(", ", missingDependencies )}, Found ({locatedDependencies.Count}): {string.Join( ", ",locatedDependencies )}" );
             }
@@ -110,6 +126,8 @@ namespace AutoDependencyDetector.Logic
 
                 File.Copy( depSourcePath, Path.Combine( destinationDirectory, Path.GetFileName( depSourcePath ) ) );
             }
+
+            return locatedDependencies.Count;
 
         }
 
