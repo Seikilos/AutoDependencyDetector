@@ -26,7 +26,13 @@ namespace AutoDependencyDetector
                     Environment.Exit( 1 );
                 }
 
-                var p = new ProcessPipeline();
+                var logger = new ConsoleLogger();
+
+                var pathOfDependsRoot = _getDependencyWalkerIfMissing(logger);
+
+                var dd = new DependencyDetector( pathOfDependsRoot );
+
+                var p = new ProcessPipeline(logger,dd);
                 p.ExecutePipeline( options );
 
             }
@@ -39,6 +45,33 @@ namespace AutoDependencyDetector
         }
 
 
-       
+        private static string _getDependencyWalkerIfMissing( ConsoleLogger logger )
+        {
+            var current = Environment.CurrentDirectory;
+
+            var dirName = "DependencyWalker";
+
+            var finalDir = Path.Combine( current, dirName );
+
+            if ( Directory.Exists( finalDir ) )
+            {
+                return finalDir; // all set
+            }
+
+            logger.Warn( "Detected missing dependency walker. Trying to obtain" );
+            // Missing depends. Download
+            var dwo = new DependencyWalkerObtainer( finalDir );
+
+            dwo.DownloadFiles().Wait();
+
+            var fileCount = Directory.GetFiles( finalDir, "*.exe", SearchOption.AllDirectories ).Length;
+            if ( fileCount != 2 )
+            {
+                throw new InvalidOperationException( $"Failed to obtain dependency walker. Expected two executables to find in {finalDir}, found {fileCount}" );
+            }
+
+
+            return finalDir;
+        }
     }
 }

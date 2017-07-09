@@ -69,6 +69,7 @@
     <Compile Include="Logic\DependencyLocator.cs" />
     <Compile Include="Logic\DependencyWalkerObtainer.cs" />
     <Compile Include="Data\Options.cs" />
+    <Compile Include="Logic\ILogger.cs" />
     <Compile Include="Logic\ProcessPipeline.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

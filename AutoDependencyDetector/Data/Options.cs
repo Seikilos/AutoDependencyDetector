@@ -21,6 +21,9 @@ namespace AutoDependencyDetector.Logic
         [Option('r', "recurse", DefaultValue = true, HelpText = "Flag determining whether also sub directories should be analyzed and resolved")]
         public bool RecurseInput { get; set; }
 
+        [Option('d', "dependencies", HelpText = "Directory of dependencies", Required = true)]
+        public string DependencyDirectory { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
         

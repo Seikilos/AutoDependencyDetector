@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AutoDependencyDetector.Logic
 {
-    public class ConsoleLogger
+    public class ConsoleLogger : ILogger
     {
 
         public void Info( string msg, params object[] args )
@@ -18,10 +18,19 @@ namespace AutoDependencyDetector.Logic
             }
         }
 
+        
+        public void Warn( string msg, params object[] args )
+        {
+            using ( new ConsoleColorScope( backColor:ConsoleColor.Yellow,  frontColor: ConsoleColor.Black ) )
+            {
+                format( msg, args );
+            }
+        }
+
 
         private void format( string msg, params object[] args )
         {
-            Console.WriteLine(string.Format( msg, args ) + Environment.NewLine);
+            Console.WriteLine( msg, args );
         }
 
 
@@ -38,5 +47,6 @@ namespace AutoDependencyDetector.Logic
                 Console.ResetColor();
             }
         }
+
     }
 }
