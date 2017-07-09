@@ -7,20 +7,30 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDependencyDetector", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoDependencyDetectorTests", "AutoDependencyDetectorTests\AutoDependencyDetectorTests.csproj", "{076CC898-2D67-4B7D-A4CD-F9DDF1C4DD81}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyWalkerDownloader", "DependencyWalkerDownloader\DependencyWalkerDownloader.csproj", "{F863A7C4-AD5A-4F2F-8330-58082F1F3E7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		DownloadDependencyWalker|Any CPU = DownloadDependencyWalker|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{76C9D2FA-4B0F-40EB-8637-197E5539FD33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76C9D2FA-4B0F-40EB-8637-197E5539FD33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76C9D2FA-4B0F-40EB-8637-197E5539FD33}.DownloadDependencyWalker|Any CPU.ActiveCfg = DownloadDependencyWalker|Any CPU
+		{76C9D2FA-4B0F-40EB-8637-197E5539FD33}.DownloadDependencyWalker|Any CPU.Build.0 = DownloadDependencyWalker|Any CPU
 		{76C9D2FA-4B0F-40EB-8637-197E5539FD33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76C9D2FA-4B0F-40EB-8637-197E5539FD33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{076CC898-2D67-4B7D-A4CD-F9DDF1C4DD81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{076CC898-2D67-4B7D-A4CD-F9DDF1C4DD81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{076CC898-2D67-4B7D-A4CD-F9DDF1C4DD81}.DownloadDependencyWalker|Any CPU.ActiveCfg = DownloadDependencyWalker|Any CPU
 		{076CC898-2D67-4B7D-A4CD-F9DDF1C4DD81}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{076CC898-2D67-4B7D-A4CD-F9DDF1C4DD81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F863A7C4-AD5A-4F2F-8330-58082F1F3E7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F863A7C4-AD5A-4F2F-8330-58082F1F3E7C}.DownloadDependencyWalker|Any CPU.ActiveCfg = DownloadDependencyWalker|Any CPU
+		{F863A7C4-AD5A-4F2F-8330-58082F1F3E7C}.DownloadDependencyWalker|Any CPU.Build.0 = DownloadDependencyWalker|Any CPU
+		{F863A7C4-AD5A-4F2F-8330-58082F1F3E7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
