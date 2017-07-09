@@ -31,7 +31,10 @@ namespace AutoDependencyDetector.Logic
 
         private async Task _downloadFile( string url, string destination )
         {
-            var tempFile = Path.GetTempFileName();
+            // Compatibility temp file location since temp directory is not available on ci server due to permissions
+            Directory.CreateDirectory( destination );
+            var tempFile = Path.Combine( destination, Guid.NewGuid() + ".tmp" );
+
             using (WebClient webClient = new WebClient())
             {
                 webClient.Credentials = CredentialCache.DefaultNetworkCredentials;
