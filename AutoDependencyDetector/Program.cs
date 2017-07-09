@@ -33,7 +33,7 @@ namespace AutoDependencyDetector
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
                 var p = new ProcessPipeline(logger,dd);
-                p.ExecutePipeline( options );
+                p.ExecutePipeline( options, _readConfig( options.Config ) );
 
             }
             catch ( Exception e )
@@ -72,6 +72,19 @@ namespace AutoDependencyDetector
 
 
             return finalDir;
+        }
+
+        
+        private static Config _readConfig( string optionsConfig )
+        {
+            if ( File.Exists( optionsConfig ) == false )
+            {
+                // Create default one
+                var c = Config.CreateDefaultConfig();
+                File.WriteAllText( optionsConfig, JsonConvert.SerializeObject( c ,Formatting.Indented) );
+            }
+
+            return JsonConvert.DeserializeObject< Config >( File.ReadAllText( optionsConfig ));
         }
     }
 }

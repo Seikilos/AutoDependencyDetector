@@ -10,11 +10,14 @@ namespace AutoDependencyDetector.Data
     {
         public HashSet<string> AnalyzedExtensions { get; set; } = new HashSet< string >();
 
+        public uint HowManyIterations { get; set; } 
+
         public static Config CreateDefaultConfig()
         {
             return new Config
             {
-                AnalyzedExtensions = new HashSet< string > { ".exe", ".dll" }
+                AnalyzedExtensions = new HashSet< string > { ".exe", ".dll" },
+                HowManyIterations = 3,
             };
         }
     }

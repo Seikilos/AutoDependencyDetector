@@ -28,34 +28,43 @@ namespace AutoDependencyDetector.Logic
             Logger = logger;
         }
 
-        public void ExecutePipeline( Options options)
+        public void ExecutePipeline( Options options, Config config)
         {
-            
+
             _options = options;
 
-           
+
             Logger.Info( "Starting dependency detection" );
 
-            Logger.Info( "Analyzing {0}{1}", options.InputDirectory, options.RecurseInput?" and children" : "" );
+            Logger.Info( "Analyzing {0}{1}", options.InputDirectory, options.RecurseInput ? " and children" : "" );
 
-            _verifyDir(options.InputDirectory, "Input directory");
+            _verifyDir( options.InputDirectory, "Input directory" );
             _verifyDir( options.DependencyDirectory, "Dependency directory" );
 
 
             // --------- Obtain configuration
-            _config = _readConfig( options.Config );
+            _config = config;
 
-            // --------- Get all directories
+            // --------- For the configured amount of sweeps repeat the dependency lookup
+            for ( var i = 0; i < _config.HowManyIterations; ++i )
+            {
+                Logger.Info( "Starting dependency search sweep {0}/{1}", i+1, _config.HowManyIterations );
+
+                // --------- Get all directories
+                handleDependenciesForDirectories( options );
+            }
+
+        }
+
+        private void handleDependenciesForDirectories( Options options )
+        {
             var directories = _forEveryDirectory( options.InputDirectory, options.RecurseInput );
-            
+
             // --------- Read all dependencies
             foreach ( var directory in directories )
             {
                 _handleDependenciesForDirectory( directory );
             }
-            
-
-
         }
 
         private void _handleDependenciesForDirectory( string directory )
@@ -119,17 +128,6 @@ namespace AutoDependencyDetector.Logic
 
         }
 
-        private Config _readConfig( string optionsConfig )
-        {
-            if ( File.Exists( optionsConfig ) == false )
-            {
-                // Create default one
-                var c = Config.CreateDefaultConfig();
-                File.WriteAllText( optionsConfig, JsonConvert.SerializeObject( c ,Formatting.Indented) );
-            }
-
-            return JsonConvert.DeserializeObject< Config >( File.ReadAllText( optionsConfig ));
-        }
 
         private List<string> _gatherInputFiles( string dir)
         {

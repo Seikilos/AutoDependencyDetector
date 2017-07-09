@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoDependencyDetector.Data;
 using AutoDependencyDetector.Logic;
 using NUnit.Framework;
 
@@ -19,12 +20,17 @@ namespace AutoDependencyDetectorTests
 
         private Options _defaultOptions;
 
+        private Config _defaultConfig;
+
 
         [SetUp]
         public void Setup()
         {
             _dependsRoot = Path.Combine( TestData, "Depends" );
             _dependencyRoot = Path.Combine( TestData, "x64" );
+
+            _defaultConfig = Config.CreateDefaultConfig();
+            _defaultConfig.HowManyIterations = 1; // Manually control more sweeps
 
             // Create scenarios where executable is missing a dependency
             DirectoryOfExeWithMissingDep = Path.Combine( TestData, "only_exe" );
@@ -67,7 +73,7 @@ namespace AutoDependencyDetectorTests
         public void Test_Dependency_is_detected_for_file()
         {
 
-            _pipeline.ExecutePipeline( _defaultOptions );
+            _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig );
 
             Assert.That( Directory.GetFiles( DirectoryOfExeWithMissingDep, "DependencyA.dll", SearchOption.AllDirectories ), Has.Exactly( 1 ).Items );
         }
@@ -78,13 +84,23 @@ namespace AutoDependencyDetectorTests
         {
             _defaultOptions.RecurseInput = true;
 
-            _pipeline.ExecutePipeline( _defaultOptions );
+            _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig );
 
             Assert.That( Directory.GetFiles( DirectoryOfExeWithMissingDep, "DependencyA.dll", SearchOption.AllDirectories ), Has.Exactly( 2 ).Items );
         }
 
         [Test]
         public void Test_Dependency_of_dependency_is_detected_in_second_sweep()
+        {
+            _defaultOptions.RecurseInput = true;
+            _defaultConfig.HowManyIterations = 3;
+            _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig );
+
+            Assert.That( Directory.GetFiles( DirectoryOfExeWithMissingDep, "DependencyB.dll", SearchOption.AllDirectories ), Has.Exactly( 2 ).Items );
+        }
+
+        [Test]
+        public void Test_that_pipeline_throws_if_not_all_dependencies_could_be_resolved()
         {
             Assert.Fail("TODO");
         }
