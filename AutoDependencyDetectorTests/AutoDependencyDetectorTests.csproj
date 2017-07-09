@@ -80,18 +80,18 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\TestData\x64\DependencyA.dll">
+    <EmbeddedResource Include="..\TestData\x64\DependencyA.dll">
       <Link>TestData\x64\DependencyA.dll</Link>
-    </Content>
-    <Content Include="..\TestData\x64\Main.exe">
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\TestData\x64\Main.exe">
       <Link>TestData\x64\Main.exe</Link>
-    </Content>
-    <Content Include="..\TestData\x86\DependencyA.dll">
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\TestData\x86\DependencyA.dll">
       <Link>TestData\x86\DependencyA.dll</Link>
-    </Content>
-    <Content Include="..\TestData\x86\Main.exe">
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\TestData\x86\Main.exe">
       <Link>TestData\x86\Main.exe</Link>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
