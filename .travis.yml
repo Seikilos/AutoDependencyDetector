@@ -8,5 +8,6 @@ script:
   - xbuild /p:Configuration=DownloadDependencyWalker AutoDependencyDetector.sln
   - xbuild /p:Configuration=Release AutoDependencyDetector.sln
   - chmod +x DependencyWalkerDownloader/bin/DownloadDependencyWalker/DependencyWalkerDownloader.exe
+  - ls -l DependencyWalkerDownloader/bin/DownloadDependencyWalker/DependencyWalkerDownloader.exe
   - DependencyWalkerDownloader/bin/DownloadDependencyWalker/DependencyWalkerDownloader.exe
   - mono ./testrunner/NUnit.ConsoleRunner.3.6.1/tools/nunit3-console.exe ./AutoDependencyDetectorTests/bin/Release/*Tests.dll
