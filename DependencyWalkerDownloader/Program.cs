@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,13 +36,24 @@ namespace DependencyWalkerDownloader
 
             var path = args[ 0 ];
 
-            
+            // Make sure this directory is empty
+            foreach ( var directoryInfo in new DirectoryInfo(path).GetDirectories() )
+            {
+                directoryInfo.Delete(true);
+            }
+           
 
             Console.WriteLine( $"Downloading depends to {path}" );
 
             var d = new DependencyWalkerObtainer(path);
 
             d.DownloadFiles().GetAwaiter().GetResult();
+
+            var exeFiles = Directory.GetFiles( path, "*.exe", SearchOption.AllDirectories ).Length;
+            if ( exeFiles != 2 )
+            {
+                throw new InvalidOperationException($"Expected two executables, found {exeFiles}");
+            }
         }
     }
 }
