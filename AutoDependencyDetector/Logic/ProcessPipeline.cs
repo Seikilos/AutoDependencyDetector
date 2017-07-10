@@ -45,49 +45,59 @@ namespace AutoDependencyDetector.Logic
             _config = config;
 
             // --------- For the configured amount of sweeps repeat the dependency lookup
+            _repeatDependencyResovling( options );
+
+        }
+
+        private void _repeatDependencyResovling( Options options )
+        {
+            var locatedDependencies = 0;
             for ( var i = 0; i < _config.HowManyIterations; ++i )
             {
-                Logger.Info( "Starting dependency search sweep {0}/{1}", i+1, _config.HowManyIterations );
+                Logger.Info( "Starting dependency search sweep {0}/{1}", i + 1, _config.HowManyIterations );
 
                 // --------- Get all directories
-                var remainingDependencies = handleDependenciesForDirectories( options );
-                if ( remainingDependencies == 0 )
+                locatedDependencies = handleDependenciesForDirectories( options );
+                if ( locatedDependencies == 0 )
                 {
                     break;
                 }
             }
 
-          
+            if ( locatedDependencies != 0 )
+            {
+                throw new ProcessPipelineException( $"After {_config.HowManyIterations} there might still be missing dependencies. Increase the HowManyIterations to ensure all dependencies are located" );
+            }
         }
 
         private int handleDependenciesForDirectories( Options options )
         {
             var directories = _forEveryDirectory( options.InputDirectory, options.RecurseInput );
 
-            var remainingDependencies = 0;
+            var locatedDependencies = 0;
 
             // --------- Read all dependencies
             foreach ( var directory in directories )
             {
-                remainingDependencies +=_handleDependenciesForDirectory( directory );
+                locatedDependencies +=_handleDependenciesForDirectory( directory );
             }
 
-            return remainingDependencies;
+            return locatedDependencies;
         }
 
         private int _handleDependenciesForDirectory( string directory )
         {
-            var remainingDependencies = 0;
+            var locatedDependencies = 0;
             Logger.Info( "Analyzing dependencies in {0}", directory );
 
             var inputs = _gatherInputFiles( directory );
             Logger.Info( "Found {0} input files", inputs.Count );
             foreach ( var input in inputs )
             {
-                remainingDependencies += _handleDependenciesForFile( input );
+                locatedDependencies += _handleDependenciesForFile( input );
             }
 
-            return remainingDependencies;
+            return locatedDependencies;
         }
 
         private int _handleDependenciesForFile( string file )
