@@ -23,6 +23,8 @@ namespace AutoDependencyDetector.Logic
 
         private Config _config;
 
+        private HashSet< string > _listOfProcessedInputFiles;
+
         public ProcessPipeline( ILogger logger, DependencyDetector detector )
         {
             _detector = detector;
@@ -39,6 +41,9 @@ namespace AutoDependencyDetector.Logic
             _verifyDir( options.InputDirectory, "Input directory" );
             _verifyDir( options.DependencyDirectory, "Dependency directory" );
 
+
+            // List of all successfully processed files
+            _listOfProcessedInputFiles = new HashSet< string >();
 
 
             // --------- Obtain configuration
@@ -62,6 +67,7 @@ namespace AutoDependencyDetector.Logic
                 {
                     break;
                 }
+
             }
 
             if ( locatedDependencies != 0 )
@@ -91,6 +97,7 @@ namespace AutoDependencyDetector.Logic
             Logger.Info( "Analyzing dependencies in {0}", directory );
 
             var inputs = _gatherInputFiles( directory );
+
             Logger.Info( "Found {0} input files", inputs.Count );
             foreach ( var input in inputs )
             {
@@ -125,6 +132,9 @@ namespace AutoDependencyDetector.Logic
             {
                 throw new ProcessPipelineException( $"Not all missing dependencies for {file} could be found: Missing ({missingDependencies.Count}): {string.Join(", ", missingDependencies )}, Found ({locatedDependencies.Count}): {string.Join( ", ",locatedDependencies )}" );
             }
+
+            // All dependencies have been located, add it to finished files
+            _listOfProcessedInputFiles.Add( file );
 
             var destinationDirectory = Path.GetDirectoryName( file );
 
@@ -168,9 +178,13 @@ namespace AutoDependencyDetector.Logic
             var allFiles = Directory.GetFiles( dir, "*",  SearchOption.TopDirectoryOnly );
 
             // Filter data by extension
-            var filtered = allFiles.Where( f => _config.AnalyzedExtensions.Contains( Path.GetExtension( f ) ) );
+            var filtered = allFiles
+                .Where( f => _config.AnalyzedExtensions.Contains( Path.GetExtension( f ) ) ) // Must support extension
+                .Where( f => _listOfProcessedInputFiles.Contains( f ) == false  ) // must not be already processed
+                .ToList();
 
-            return filtered.ToList();
+    
+            return filtered;
             
         }
 

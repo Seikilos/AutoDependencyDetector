@@ -14,6 +14,8 @@ namespace AutoDependencyDetectorTests
     public class TestProcessPipeline : TestCommon
     {
         private string DirectoryOfExeWithMissingDep;
+
+        private string DirectoryOfDepAMissingDepB;
         private ProcessPipeline _pipeline;
         private string _dependsRoot;
 
@@ -31,7 +33,7 @@ namespace AutoDependencyDetectorTests
             _dependencyRoot = Path.Combine( TestData, "x64" );
 
             _defaultConfig = Config.CreateDefaultConfig();
-            _defaultConfig.HowManyIterations = 1; // Manually control more sweeps
+            _defaultConfig.HowManyIterations = 2; // Manually control sweeps, always at least 2 required
 
             // Create scenarios where executable is missing a dependency
             DirectoryOfExeWithMissingDep = Path.Combine( TestData, "only_exe" );
@@ -39,8 +41,15 @@ namespace AutoDependencyDetectorTests
 
             _defaultOptions = new Options { InputDirectory = DirectoryOfExeWithMissingDep, RecurseInput = false, Config = "config.json", DependencyDirectory = _dependencyRoot };
 
-
             TearDown();
+
+            // DepA
+            {
+                DirectoryOfDepAMissingDepB = Path.Combine( TestData, "depA" );
+                CreateDir( DirectoryOfDepAMissingDepB );
+                File.Copy( GetFiles( "x64", "*A.dll" ).First(), Path.Combine( DirectoryOfDepAMissingDepB, "dlla.dll" ) );
+            }
+
 
             CreateDir( DirectoryOfExeWithMissingDep );
 
@@ -63,27 +72,33 @@ namespace AutoDependencyDetectorTests
             _pipeline = new ProcessPipeline(mock,dd);
         }
 
+
         [TearDown]
         public void TearDown()
         {
             // Delete artifacts generated per run
             DeleteDirectoryWithRetries( DirectoryOfExeWithMissingDep );
+            DeleteDirectoryWithRetries( DirectoryOfDepAMissingDepB );
         }
 
         [Test]
         public void Test_Dependency_is_detected_for_file()
         {
+            // Use dllA since it has only one Dependency
+            _defaultOptions.InputDirectory = DirectoryOfDepAMissingDepB;
 
             _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig );
 
-            Assert.That( Directory.GetFiles( DirectoryOfExeWithMissingDep, "DependencyA.dll", SearchOption.AllDirectories ), Has.Exactly( 1 ).Items );
+            Assert.That( Directory.GetFiles( DirectoryOfDepAMissingDepB, "DependencyB.dll", SearchOption.AllDirectories ), Has.Exactly( 1 ).Items );
         }
 
 
         [Test]
         public void Test_Dependency_is_detected_for_file_in_nested_directory()
         {
+
             _defaultOptions.RecurseInput = true;
+            _defaultConfig.HowManyIterations = 3;
 
             _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig );
 
@@ -112,7 +127,6 @@ namespace AutoDependencyDetectorTests
         }
 
 
-        // TODO: Optimize sweep that it does not look up files again which have all resolved dependencies
 
         // TODO: Configure filter via configuration
        
