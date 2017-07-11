@@ -122,7 +122,8 @@ namespace AutoDependencyDetectorTests
             // Set dep dir so that it won't find any dependencies
             _defaultOptions.DependencyDirectory = emptyDir;
 
-            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<ProcessPipelineException>() );
+            // Probably Pipeline should wrap DependencyLocatorException into a PipelineException
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<DependencyLocatorException>() );
 
         }
 
