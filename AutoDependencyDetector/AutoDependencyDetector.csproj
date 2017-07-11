@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Config.cs" />
+    <Compile Include="Exceptions\ConfigurationException.cs" />
     <Compile Include="Exceptions\DependencyLocatorException.cs" />
     <Compile Include="Exceptions\ProcessPipelineException.cs" />
     <Compile Include="Interfaces\BitnessEnum.cs" />

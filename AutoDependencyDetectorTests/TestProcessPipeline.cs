@@ -134,14 +134,24 @@ namespace AutoDependencyDetectorTests
 
             _defaultOptions.DependencyDirectory = TestDataExtracted;
             _defaultConfig.HowManyIterations = 3;
-            _defaultConfig.ExcludeRegexList.Add( "x86" );
+
+            _defaultConfig.ConfigurationSets[Config.DefaultSetName].ExcludeRegexList.Add( "x86" );
             
             Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.Nothing, "Pipeline should filter the wrong variant of Dependency" );
 
         }
 
+        
+        [Test]
+        public void Test_that_pipeline_is_able_to_use_different_set_than_default()
+        {
+            var set = "AllFilter";
 
-        // TODO: Configure filter via configuration
-       
+            _defaultOptions.ConfigurationSetName = set;
+            _defaultConfig.ConfigurationSets[ set ] = new Config.ConfigurationSet { ExcludeRegexList = new List< string >{".*"}};
+          
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<DependencyLocatorException>(), "AllFilter set should exclude all files" );
+
+        }
     }
 }
