@@ -125,6 +125,8 @@ namespace AutoDependencyDetector.Logic
 
 
             var dl = new DependencyLocator( _options.DependencyDirectory );
+            _config.ExcludeRegexList.ForEach( e => dl.Excludes.Add( e ) );
+            _config.IncludeRegexList.ForEach( e => dl.Includes.Add( e ) );
 
             var locatedDependencies = dl.LocateDependencies( missingDependencies );
 

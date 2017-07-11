@@ -14,7 +14,7 @@ namespace AutoDependencyDetectorTests
         [Test]
         public async Task Test_DependencyWalkerObtainer_fetches_x64_and_x86()
         {
-            var path = Path.Combine( TestData, "new_dir" );
+            var path = Path.Combine( TestDataRoot, "new_dir" );
 
             var d = new DependencyWalkerObtainer(path);
 

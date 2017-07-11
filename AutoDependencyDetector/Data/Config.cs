@@ -12,6 +12,9 @@ namespace AutoDependencyDetector.Data
 
         public uint HowManyIterations { get; set; } 
 
+        public List<string> ExcludeRegexList { get; set; } = new List< string >();
+        public List<string> IncludeRegexList { get; set; } = new List< string >();
+
         public static Config CreateDefaultConfig()
         {
             return new Config

@@ -29,14 +29,14 @@ namespace AutoDependencyDetectorTests
         [SetUp]
         public void Setup()
         {
-            _dependsRoot = Path.Combine( TestData, "Depends" );
-            _dependencyRoot = Path.Combine( TestData, "x64" );
+            _dependsRoot = Path.Combine( TestDataExtracted, "Depends" );
+            _dependencyRoot = Path.Combine( TestDataExtracted, "x64" );
 
             _defaultConfig = Config.CreateDefaultConfig();
             _defaultConfig.HowManyIterations = 2; // Manually control sweeps, always at least 2 required
 
             // Create scenarios where executable is missing a dependency
-            DirectoryOfExeWithMissingDep = Path.Combine( TestData, "only_exe" );
+            DirectoryOfExeWithMissingDep = Path.Combine( TestDataOwn, "only_exe" );
 
 
             _defaultOptions = new Options { InputDirectory = DirectoryOfExeWithMissingDep, RecurseInput = false, Config = "config.json", DependencyDirectory = _dependencyRoot };
@@ -45,15 +45,15 @@ namespace AutoDependencyDetectorTests
 
             // DepA
             {
-                DirectoryOfDepAMissingDepB = Path.Combine( TestData, "depA" );
+                DirectoryOfDepAMissingDepB = Path.Combine( TestDataOwn, "depA" );
                 CreateDir( DirectoryOfDepAMissingDepB );
-                File.Copy( GetFiles( "x64", "*A.dll" ).First(), Path.Combine( DirectoryOfDepAMissingDepB, "dlla.dll" ) );
+                File.Copy( GetExtractedFiles( "x64", "*A.dll" ).First(), Path.Combine( DirectoryOfDepAMissingDepB, "dlla.dll" ) );
             }
 
 
             CreateDir( DirectoryOfExeWithMissingDep );
 
-            var file = GetFiles( "x64", "*.exe" ).First();
+            var file = GetExtractedFiles( "x64", "*.exe" ).First();
 
             File.Copy( file, Path.Combine(DirectoryOfExeWithMissingDep,"executable.exe") );
 
@@ -127,6 +127,18 @@ namespace AutoDependencyDetectorTests
 
         }
 
+
+        [Test]
+        public void Test_that_pipeline_uses_exclude_filter_correctly()
+        {
+
+            _defaultOptions.DependencyDirectory = TestDataExtracted;
+            _defaultConfig.HowManyIterations = 3;
+            _defaultConfig.ExcludeRegexList.Add( "x86" );
+            
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.Nothing, "Pipeline should filter the wrong variant of Dependency" );
+
+        }
 
 
         // TODO: Configure filter via configuration

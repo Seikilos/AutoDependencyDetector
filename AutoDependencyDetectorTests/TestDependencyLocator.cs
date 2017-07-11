@@ -16,14 +16,14 @@ namespace AutoDependencyDetectorTests
         [SetUp]
         public void SetUp()
         {
-            _locator = new DependencyLocator( TestData );
+            _locator = new DependencyLocator( TestDataExtracted );
         }
 
 
         [Test]
         public void Test_Locator_finds_single_dependency()
         {
-            _locator = new DependencyLocator( Path.Combine( TestData, "x64" ) );
+            _locator = new DependencyLocator( Path.Combine( TestDataExtracted, "x64" ) );
 
             var result = _locator.LocateDependencies( new [] { "DependencyA.dll" } );
 
@@ -34,7 +34,7 @@ namespace AutoDependencyDetectorTests
         [Test]
         public void Test_Locator_throws_if_no_dependencies_found()
         {
-            _locator = new DependencyLocator( Path.Combine( TestData, "x64" ) );
+            _locator = new DependencyLocator( Path.Combine( TestDataExtracted, "x64" ) );
 
             Assert.That( () => _locator.LocateDependencies( new[] { "Does_not_Exist.dll" } ), Throws.TypeOf<DependencyLocatorException>() );
 
@@ -49,7 +49,7 @@ namespace AutoDependencyDetectorTests
 
         private string _createDummyStructure()
         {
-            var dRoot = Path.Combine( TestData, "tree" );
+            var dRoot = Path.Combine( TestDataOwn, "tree" );
             Directory.CreateDirectory( dRoot+"/A" );
             Directory.CreateDirectory( dRoot+"/B" );
             File.WriteAllText( dRoot+"/A/foo.dll", "" );
