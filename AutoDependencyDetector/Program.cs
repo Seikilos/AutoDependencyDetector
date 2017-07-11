@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoDependencyDetector.Data;
 using AutoDependencyDetector.Logic;
+using CommandLine.Text;
 using Newtonsoft.Json;
 
 namespace AutoDependencyDetector
@@ -28,6 +29,8 @@ namespace AutoDependencyDetector
 
                 var logger = new ConsoleLogger();
 
+                logger.Info( "Called with {0}", string.Join(" ",args) );
+
                 logger.Info( "Starting dependency detection" );
 
 
@@ -36,7 +39,13 @@ namespace AutoDependencyDetector
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
                 var p = new ProcessPipeline(logger,dd);
-                p.ExecutePipeline( options, _readConfig( options.Config ) );
+
+                var config = _readConfig( options.Config );
+
+                // Fail fast: Check if configuration is available
+                config.GetConfigurationSet( options.ConfigurationSetName ?? Config.DefaultSetName );
+
+                p.ExecutePipeline( options, config );
 
                 logger.Info( "Dependency detection finished" );
 
