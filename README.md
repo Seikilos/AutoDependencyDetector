@@ -35,7 +35,23 @@ Additionally on the first run it creates a default configuration called `config.
 
 ## Usage
 
-`TODO Usage examples`
+Get DependencyWalker through proxy with authentication
+
+`AutoDependencyDetector -u ProxyUser -p ProxyPassword`
+
+Get dependencies for all binaries in "C:\My_Application" directory using "C:\Depenencies"
+
+`AutoDependencyDetector -i "C:\My_Application" -d "C:\Depenencies"`
+
+Write file list of all found and copied dependencies
+
+`AutoDependencyDetector -i "C:\My_Application" -d "C:\Depenencies" -f "C:\filelist.txt"`
+
+Use a different configuration set in config.json (manually edited)
+
+`AutoDependencyDetector -i "C:\My_Application" -d "C:\Depenencies" -s ReleaseWithDebug`
+
+
 
 # Acknowledgements
 `AutoDependencyDetector` incorporates a set of great technologies which are listed here:
