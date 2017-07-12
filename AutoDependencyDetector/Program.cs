@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoDependencyDetector.Data;
+using AutoDependencyDetector.Interfaces;
 using AutoDependencyDetector.Logic;
 using CommandLine.Text;
 using Newtonsoft.Json;
@@ -34,11 +35,12 @@ namespace AutoDependencyDetector
                 logger.Info( "Starting dependency detection" );
 
 
-                var pathOfDependsRoot = _getDependencyWalkerIfMissing(logger,options.ProxyUser,options.ProxyPassword);
+                var pathOfDependsRoot = _getDependencyWalkerIfMissing( logger, options.ProxyUser, options.ProxyPassword );
 
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
-                var p = new ProcessPipeline(logger,dd);
+                IDependencyProvider dependencyProvider = new FileCopyDependencyProvider();
+                var p = new ProcessPipeline(logger,dd, dependencyProvider);
 
                 var config = _readConfig( options.Config );
 

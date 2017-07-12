@@ -69,7 +69,7 @@ namespace AutoDependencyDetectorTests
 
             var dd = new DependencyDetector( _dependsRoot );
 
-            _pipeline = new ProcessPipeline(mock,dd);
+            _pipeline = new ProcessPipeline(mock,dd, new FileCopyDependencyProvider());
         }
 
 

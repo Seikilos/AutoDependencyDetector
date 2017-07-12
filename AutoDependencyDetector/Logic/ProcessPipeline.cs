@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoDependencyDetector.Data;
 using AutoDependencyDetector.Exceptions;
+using AutoDependencyDetector.Interfaces;
 using Newtonsoft.Json;
 
 namespace AutoDependencyDetector.Logic
@@ -16,7 +17,11 @@ namespace AutoDependencyDetector.Logic
     public class ProcessPipeline
     {
         private readonly DependencyDetector _detector;
-        public ILogger Logger { get; private set; }
+        public ILogger Logger { get; }
+
+        public IDependencyProvider DependencyProvider { get; }
+
+
 
 
         private Options _options;
@@ -25,9 +30,10 @@ namespace AutoDependencyDetector.Logic
 
         private HashSet< string > _listOfProcessedInputFiles;
 
-        public ProcessPipeline( ILogger logger, DependencyDetector detector )
+        public ProcessPipeline( ILogger logger, DependencyDetector detector, IDependencyProvider dependencyProvider )
         {
             _detector = detector;
+            DependencyProvider = dependencyProvider;
             Logger = logger;
         }
 
@@ -145,7 +151,9 @@ namespace AutoDependencyDetector.Logic
 
                 var depSourcePath = dependency.Value;
 
-                File.Copy( depSourcePath, Path.Combine( destinationDirectory, Path.GetFileName( depSourcePath ) ) );
+                // Provide this dependency
+                DependencyProvider.ProvideDependency( depSourcePath, Path.Combine( destinationDirectory, Path.GetFileName( depSourcePath ) ) );
+
             }
 
             return locatedDependencies.Count;
