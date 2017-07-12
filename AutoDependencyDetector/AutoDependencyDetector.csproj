@@ -66,6 +66,7 @@
     <Compile Include="Exceptions\ProcessPipelineException.cs" />
     <Compile Include="Interfaces\BitnessEnum.cs" />
     <Compile Include="Interfaces\IDependencyProvider.cs" />
+    <Compile Include="Logic\AggregatedDependencyProvider.cs" />
     <Compile Include="Logic\BitnessDetector.cs" />
     <Compile Include="Logic\ConsoleLogger.cs" />
     <Compile Include="Logic\DependencyDetector.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Logic\DependencyWalkerObtainer.cs" />
     <Compile Include="Data\Options.cs" />
     <Compile Include="Logic\FileCopyDependencyProvider.cs" />
+    <Compile Include="Logic\FilelistDependencyProvider.cs" />
     <Compile Include="Logic\ILogger.cs" />
     <Compile Include="Logic\ProcessPipeline.cs" />
     <Compile Include="Program.cs" />

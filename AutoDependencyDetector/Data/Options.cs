@@ -33,6 +33,9 @@ namespace AutoDependencyDetector.Logic
         [Option('p', "password", HelpText = "For initially obtaining dependency walker behind a proxy")]
         public string ProxyPassword { get; set; }
 
+        [Option('f', "filelist", HelpText = "If set, dependencies additionally written to a file instead. Must be a valid filename. This will still copy files, which is necessary since there might be nested dependencies.")]
+        public string CreateFileList { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 

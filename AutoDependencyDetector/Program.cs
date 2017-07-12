@@ -39,7 +39,9 @@ namespace AutoDependencyDetector
 
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
-                IDependencyProvider dependencyProvider = new FileCopyDependencyProvider();
+                IDependencyProvider dependencyProvider = _getDependencyProvider( options );
+                
+             
                 var p = new ProcessPipeline(logger,dd, dependencyProvider);
 
                 var config = _readConfig( options.Config );
@@ -58,6 +60,17 @@ namespace AutoDependencyDetector
                 Console.WriteLine( e.ToString() );
                 Environment.Exit( 1 );
             }
+        }
+
+        private static IDependencyProvider _getDependencyProvider( Options options )
+        {
+            if ( string.IsNullOrEmpty( options.CreateFileList ) == false )
+            {
+                return new AggregatedDependencyProvider( new FilelistDependencyProvider( options.CreateFileList, options.DependencyDirectory), new FileCopyDependencyProvider() );
+            }
+
+            // Default fallback
+            return new FileCopyDependencyProvider();
         }
 
 
