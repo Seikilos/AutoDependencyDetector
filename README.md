@@ -37,7 +37,7 @@ Additionally on the first run it creates a default configuration called `config.
 
 # Acknowledgements
 `AutoDependencyDetector` incorporates a set of great technologies which are listed here:
-* [Dependency Walker]( http://www.dependencywalker.com/) – of course.
+* [Dependency Walker]( http://www.dependencywalker.com/) – of course (not bundle with this application).
 * [Command Line Parser](https://github.com/gsscoder/commandline) – the best way of dealing with command line arguments.
 * [Json.NET]( http://www.newtonsoft.com/json) from Newtonsoft. 
 
