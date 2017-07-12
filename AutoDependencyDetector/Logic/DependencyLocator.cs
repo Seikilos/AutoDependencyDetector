@@ -45,7 +45,8 @@ namespace AutoDependencyDetector.Logic
                 var key = _normalizeDependencyName( Path.GetFileName( file ) );
                 if ( allFiles.ContainsKey( key ) )
                 {
-                    throw new DependencyLocatorException( $"Dependency with the name {file} (handle: {key}) already added. Modules are looked up by their handle therefore it must not be duplicated" );
+                    var existingModule = allFiles[key];
+                    throw new DependencyLocatorException( $"Dependency with the name '{file}' (handle: {key}) already added: '{existingModule}'. Modules are looked up by their handle therefore it must not be duplicated" );
                 }
                 allFiles[ key ] = file;
             }
