@@ -124,7 +124,8 @@ namespace AutoDependencyDetector.Logic
             Logger.Info( "Found {0} missing dependencies. Resolving", missingDependencies.Count );
 
 
-            var dl = new DependencyLocator( _options.DependencyDirectory );
+
+            var dl = _getDependencyLocator();
 
             var locatedDependencies = dl.LocateDependencies( missingDependencies );
 
@@ -150,6 +151,29 @@ namespace AutoDependencyDetector.Logic
             return locatedDependencies.Count;
 
         }
+
+        private DependencyLocator _getDependencyLocator()
+        {
+            var dl = new DependencyLocator( _options.DependencyDirectory );
+
+            Config.ConfigurationSet cs;
+
+            if ( string.IsNullOrWhiteSpace( _options.ConfigurationSetName ) )
+            {
+                // Try to read default, fail if missing
+                cs = _config.GetConfigurationSet( Config.DefaultSetName );
+            }
+            else
+            {
+                cs = _config.GetConfigurationSet( _options.ConfigurationSetName );
+            }
+
+            cs.ExcludeRegexList.ForEach( e => dl.Excludes.Add( e ) );
+            cs.IncludeRegexList.ForEach( e => dl.Includes.Add( e ) );
+
+            return dl;
+        }
+
 
         /// <summary>
         /// Abstracting directories. Dependencies on each directory must be resolved by it's own since they must be copied

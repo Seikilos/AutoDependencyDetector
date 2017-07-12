@@ -29,14 +29,14 @@ namespace AutoDependencyDetectorTests
         [SetUp]
         public void Setup()
         {
-            _dependsRoot = Path.Combine( TestData, "Depends" );
-            _dependencyRoot = Path.Combine( TestData, "x64" );
+            _dependsRoot = Path.Combine( TestDataExtracted, "Depends" );
+            _dependencyRoot = Path.Combine( TestDataExtracted, "x64" );
 
             _defaultConfig = Config.CreateDefaultConfig();
             _defaultConfig.HowManyIterations = 2; // Manually control sweeps, always at least 2 required
 
             // Create scenarios where executable is missing a dependency
-            DirectoryOfExeWithMissingDep = Path.Combine( TestData, "only_exe" );
+            DirectoryOfExeWithMissingDep = Path.Combine( TestDataOwn, "only_exe" );
 
 
             _defaultOptions = new Options { InputDirectory = DirectoryOfExeWithMissingDep, RecurseInput = false, Config = "config.json", DependencyDirectory = _dependencyRoot };
@@ -45,15 +45,15 @@ namespace AutoDependencyDetectorTests
 
             // DepA
             {
-                DirectoryOfDepAMissingDepB = Path.Combine( TestData, "depA" );
+                DirectoryOfDepAMissingDepB = Path.Combine( TestDataOwn, "depA" );
                 CreateDir( DirectoryOfDepAMissingDepB );
-                File.Copy( GetFiles( "x64", "*A.dll" ).First(), Path.Combine( DirectoryOfDepAMissingDepB, "dlla.dll" ) );
+                File.Copy( GetExtractedFiles( "x64", "*A.dll" ).First(), Path.Combine( DirectoryOfDepAMissingDepB, "dlla.dll" ) );
             }
 
 
             CreateDir( DirectoryOfExeWithMissingDep );
 
-            var file = GetFiles( "x64", "*.exe" ).First();
+            var file = GetExtractedFiles( "x64", "*.exe" ).First();
 
             File.Copy( file, Path.Combine(DirectoryOfExeWithMissingDep,"executable.exe") );
 
@@ -122,13 +122,36 @@ namespace AutoDependencyDetectorTests
             // Set dep dir so that it won't find any dependencies
             _defaultOptions.DependencyDirectory = emptyDir;
 
-            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<ProcessPipelineException>() );
+            // Probably Pipeline should wrap DependencyLocatorException into a PipelineException
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<DependencyLocatorException>() );
 
         }
 
 
+        [Test]
+        public void Test_that_pipeline_uses_exclude_filter_correctly()
+        {
 
-        // TODO: Configure filter via configuration
-       
+            _defaultOptions.DependencyDirectory = TestDataExtracted;
+            _defaultConfig.HowManyIterations = 3;
+
+            _defaultConfig.ConfigurationSets[Config.DefaultSetName].ExcludeRegexList.Add( "x86" );
+            
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.Nothing, "Pipeline should filter the wrong variant of Dependency" );
+
+        }
+
+        
+        [Test]
+        public void Test_that_pipeline_is_able_to_use_different_set_than_default()
+        {
+            var set = "AllFilter";
+
+            _defaultOptions.ConfigurationSetName = set;
+            _defaultConfig.ConfigurationSets[ set ] = new Config.ConfigurationSet { ExcludeRegexList = new List< string >{".*"}};
+          
+            Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<DependencyLocatorException>(), "AllFilter set should exclude all files" );
+
+        }
     }
 }

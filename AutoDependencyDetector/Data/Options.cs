@@ -24,9 +24,13 @@ namespace AutoDependencyDetector.Logic
         [Option('d', "dependencies", HelpText = "Directory of dependencies", Required = true)]
         public string DependencyDirectory { get; set; }
 
+        [Option('s', "configsetname", HelpText = "Name of configuration set to use. Allows to handle multiple configurations in one file")]
+        public string ConfigurationSetName { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
-        
+
+
         [HelpOption]
         public string GetUsage()
         {

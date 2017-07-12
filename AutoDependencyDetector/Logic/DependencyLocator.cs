@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AutoDependencyDetector.Exceptions;
 
@@ -14,33 +15,42 @@ namespace AutoDependencyDetector.Logic
     public class DependencyLocator
     {
         public string DependencyRootDirectory { get; }
-        public DependencyLocator(string dependencyRoot)
+        public List< string > Excludes { get; } = new List< string >();
+        public List<string> Includes { get; } = new List< string >();
+
+        public DependencyLocator( string dependencyRoot )
         {
             if ( Directory.Exists( dependencyRoot ) == false )
             {
-                throw new DirectoryNotFoundException(dependencyRoot);
+                throw new DirectoryNotFoundException( dependencyRoot );
             }
 
             DependencyRootDirectory = dependencyRoot;
-
         }
 
-        public Dictionary<string, string> LocateDependencies( IList<string> dependencyNames )
+        public Dictionary< string, string > LocateDependencies( IList< string > dependencyNames )
         {
             // Fail if key is duplicated
-            var allFiles = new Dictionary<string, string>();
+            var allFiles = new Dictionary< string, string >();
 
             foreach ( var file in Directory.GetFiles( DependencyRootDirectory, "*", SearchOption.AllDirectories ) )
             {
+                // Apply available filters, if string is marked as invalid, do not take it into consideration
+                if ( validAfterFilters( file ) == false)
+                {
+                    continue;
+                }
+
+
                 var key = _normalizeDependencyName( Path.GetFileName( file ) );
                 if ( allFiles.ContainsKey( key ) )
                 {
-                    throw new DependencyLocatorException($"Dependency with the name {file} (handle: {key}) already added. Modules are looked up by their handle therefore it must not be duplicated"  );
+                    throw new DependencyLocatorException( $"Dependency with the name {file} (handle: {key}) already added. Modules are looked up by their handle therefore it must not be duplicated" );
                 }
                 allFiles[ key ] = file;
             }
 
-            var results = new Dictionary<string, string>();
+            var results = new Dictionary< string, string >();
 
             foreach ( var dep in dependencyNames )
             {
@@ -49,11 +59,64 @@ namespace AutoDependencyDetector.Logic
                 if ( allFiles.ContainsKey( normalizedDepName ) )
                 {
                     // Add this path
-                    results.Add( dep, allFiles[normalizedDepName] );
+                    results.Add( dep, allFiles[ normalizedDepName ] );
                 }
             }
 
+            if ( results.Count == 0 )
+            {
+                throw new DependencyLocatorException( $"Path {DependencyRootDirectory} does not contain any dependencies matching {string.Join( ", ", dependencyNames )}. Check whether filters are correct." );
+            }
+
             return results;
+        }
+
+        private bool validAfterFilters( string file )
+        {
+            if ( Excludes.Any() == false && Includes.Any() == false )
+            {
+                // Default match when nothing has been added
+                return true;
+            }
+
+            // If Exclude has been define, guard everything against it
+            // If Include has been defined, do the same
+            // If both then check exclude then include first
+
+            if ( Excludes.Any() )
+            {
+                if ( _matchesFilter( Excludes, file ) )
+                {
+                    return false;
+                }
+            }
+
+            if ( Includes.Any() )
+            {
+                if ( _matchesFilter( Includes, file ) )
+                {
+                    return true;
+                }
+
+                // Otherwise let filter fail
+                return false;
+                
+            }
+
+            return true;
+        }
+
+        private bool _matchesFilter( List< string > filter, string text )
+        {
+            foreach ( var f in filter )
+            {
+                if ( Regex.IsMatch(text, f, RegexOptions.IgnoreCase ) )
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static string _normalizeDependencyName( string name )

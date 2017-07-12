@@ -17,13 +17,13 @@ namespace AutoDependencyDetectorTests
         [OneTimeSetUp]
         public void SetUpOnce()
         {
-            detector = new DependencyDetector( Path.Combine( TestData, "Depends" ) );
+            detector = new DependencyDetector( Path.Combine( TestDataExtracted, "Depends" ) );
         }
 
         [Test]
         public void Test_DependencyDetector_returns_no_missing_dependency_if_all_dependencies_are_available()
         {
-            var file = GetFiles( "x64", "Main.exe" ).First();
+            var file = GetExtractedFiles( "x64", "Main.exe" ).First();
 
             
             var results = detector.GetMissingDependencies( file, BitnessType.x64 );
@@ -33,11 +33,11 @@ namespace AutoDependencyDetectorTests
         [Test]
         public void Test_DependencyDetector_returns_one_missing_dependency()
         {
-            var file = GetFiles( "x64", "Main.exe" ).First();
+            var file = GetExtractedFiles( "x64", "Main.exe" ).First();
             var path = CreateDir( "dummy" );
             File.Copy( file, Path.Combine( path, Path.GetFileName( file )) );
 
-            file = GetFiles( "dummy", "*" ).First();
+            file = GetFiles( Path.Combine( TestDataOwn,"dummy"), "*" ).First();
 
             
             

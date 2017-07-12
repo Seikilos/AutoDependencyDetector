@@ -12,11 +12,16 @@ namespace AutoDependencyDetectorTests
 {
     public class TestCommon
     {
-        public readonly string TestData;
+        public readonly string TestDataRoot;
+        public readonly string TestDataExtracted;
+        public readonly string TestDataOwn;
 
         public TestCommon()
         {
-            TestData = Path.Combine( Environment.CurrentDirectory, "TestData" );
+            TestDataRoot = Path.Combine( Environment.CurrentDirectory, "TestData" );
+            TestDataExtracted = Path.Combine(TestDataRoot, "extracted" );
+            TestDataOwn = Path.Combine(TestDataRoot, "own" );
+
         }
 
         [OneTimeSetUp]
@@ -24,7 +29,9 @@ namespace AutoDependencyDetectorTests
         {
             TeardownOnce();
 
-            Directory.CreateDirectory( TestData );
+            Directory.CreateDirectory( TestDataRoot );
+            Directory.CreateDirectory( TestDataExtracted );
+            Directory.CreateDirectory( TestDataOwn );
 
 
             // Extract all test data
@@ -40,7 +47,7 @@ namespace AutoDependencyDetectorTests
                    
                 dirs = dirs.Reverse().Skip( 2 ).Reverse().ToList(); // Not fastest but suitable, drops last two entries, assuming last two names are always file.extension
                 var dir = string.Join( "/", dirs );
-                var destDir = Path.Combine( TestData, dir );
+                var destDir = Path.Combine( TestDataExtracted, dir );
                 Directory.CreateDirectory( destDir );
 
                 
@@ -68,7 +75,7 @@ namespace AutoDependencyDetectorTests
         [OneTimeTearDown]
         public void TeardownOnce()
         {
-            DeleteDirectoryWithRetries( TestData );
+            DeleteDirectoryWithRetries( TestDataRoot );
         }
 
         public static void DeleteDirectoryWithRetries(string directory)
@@ -77,16 +84,22 @@ namespace AutoDependencyDetectorTests
 
             while ( tries-- > 0 )
             {
-                if ( Directory.Exists( directory ) )
+                try
                 {
-                    Directory.Delete( directory, true );
-                }
+                    if ( Directory.Exists( directory ) )
+                    {
+                        Directory.Delete( directory, true );
+                    }
 
-                if ( Directory.Exists( directory ) == false )
+                    if ( Directory.Exists( directory ) == false )
+                    {
+                        return;
+                    }
+                }
+                catch ( Exception )
                 {
-                    return;
+                    
                 }
-
                 Assert.Warn( $"Tried to delete {directory} but failed. Retrying {tries} times" );
                 Thread.Sleep( 200 );
             }
@@ -95,14 +108,20 @@ namespace AutoDependencyDetectorTests
             Assert.Fail($"Failed to delete {directory} multiple times.");
         }
 
+
+        public List<string> GetExtractedFiles( string path, string pattern )
+        {
+            return GetFiles( Path.Combine( TestDataExtracted, path ), pattern );
+        }
+
         public List< string > GetFiles( string path, string pattern )
         {
-            return Directory.GetFiles( Path.Combine( TestData, path ), pattern ).ToList();
+            return Directory.GetFiles( Path.Combine( TestDataRoot, path ), pattern ).ToList();
         }
 
         public string CreateDir( string name )
         {
-            return Directory.CreateDirectory( Path.Combine( TestData, name ) ).FullName;
+            return Directory.CreateDirectory( Path.Combine( TestDataOwn, name ) ).FullName;
         }
     }
 }
