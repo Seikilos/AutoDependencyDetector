@@ -27,6 +27,12 @@ namespace AutoDependencyDetector.Logic
         [Option('s', "configsetname", HelpText = "Name of configuration set to use. Allows to handle multiple configurations in one file")]
         public string ConfigurationSetName { get; set; }
 
+        [Option('u', "user", HelpText = "For initially obtaining dependency walker behind a proxy")]
+        public string ProxyUser { get; set; }
+
+        [Option('p', "password", HelpText = "For initially obtaining dependency walker behind a proxy")]
+        public string ProxyPassword { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 

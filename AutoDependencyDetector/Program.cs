@@ -29,12 +29,12 @@ namespace AutoDependencyDetector
 
                 var logger = new ConsoleLogger();
 
-                logger.Info( "Called with {0}", string.Join(" ",args) );
+                logger.Info( "Called with {0}", string.Join( " ", args ) );
 
                 logger.Info( "Starting dependency detection" );
 
 
-                var pathOfDependsRoot = _getDependencyWalkerIfMissing(logger);
+                var pathOfDependsRoot = _getDependencyWalkerIfMissing(logger,options.ProxyUser,options.ProxyPassword);
 
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
@@ -59,7 +59,7 @@ namespace AutoDependencyDetector
         }
 
 
-        private static string _getDependencyWalkerIfMissing( ConsoleLogger logger )
+        private static string _getDependencyWalkerIfMissing( ConsoleLogger logger, string proxyUser, string proxyPassword )
         {
             var current = Environment.CurrentDirectory;
 
@@ -74,7 +74,7 @@ namespace AutoDependencyDetector
 
             logger.Warn( "Detected missing dependency walker. Trying to obtain" );
             // Missing depends. Download
-            var dwo = new DependencyWalkerObtainer( finalDir );
+            var dwo = new DependencyWalkerObtainer( finalDir,proxyUser, proxyPassword );
 
             dwo.DownloadFiles().Wait();
 
@@ -88,17 +88,17 @@ namespace AutoDependencyDetector
             return finalDir;
         }
 
-        
+
         private static Config _readConfig( string optionsConfig )
         {
             if ( File.Exists( optionsConfig ) == false )
             {
                 // Create default one
                 var c = Config.CreateDefaultConfig();
-                File.WriteAllText( optionsConfig, JsonConvert.SerializeObject( c ,Formatting.Indented) );
+                File.WriteAllText( optionsConfig, JsonConvert.SerializeObject( c, Formatting.Indented ) );
             }
 
-            return JsonConvert.DeserializeObject< Config >( File.ReadAllText( optionsConfig ));
+            return JsonConvert.DeserializeObject<Config>( File.ReadAllText( optionsConfig ) );
         }
     }
 }
