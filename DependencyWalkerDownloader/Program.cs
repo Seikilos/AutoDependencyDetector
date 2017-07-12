@@ -32,12 +32,21 @@ namespace DependencyWalkerDownloader
 
             Console.WriteLine( "Starting dependency download" );
 
-            if ( args.Length != 1 )
+            if ( args.Length < 1 )
             {
                 throw new ArgumentException("First argument must be directory for dependency walker");
             }
 
             var path = args[ 0 ];
+
+            string user = null;
+            string password = null;
+            if (args.Length == 3)
+            {
+                user = args[1];
+                password = args[2];
+            }
+
 
             if ( Directory.Exists( path ) == false )
             {
@@ -54,7 +63,7 @@ namespace DependencyWalkerDownloader
 
             Console.WriteLine( $"Downloading depends to {path}" );
 
-            var d = new DependencyWalkerObtainer(path);
+            var d = new DependencyWalkerObtainer(path,user, password);
 
             d.DownloadFiles().GetAwaiter().GetResult();
 

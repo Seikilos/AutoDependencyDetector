@@ -1,26 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AutoDependencyDetector.Logic
 {
     public class DependencyWalkerObtainer
     {
+        private readonly string _user;
+        private readonly string _password;
+
         public string DirectoryToDownload { get; }
-        public DependencyWalkerObtainer(string directoryToPlace)
+        public DependencyWalkerObtainer(string directoryToPlace, string user = null, string password = null)
         {
+            _user = user;
+            _password = password;
             if ( Directory.Exists( directoryToPlace ) == false )
             {
                 Directory.CreateDirectory( directoryToPlace );
             }
 
             DirectoryToDownload = directoryToPlace;
+
+
         }
 
         public async Task DownloadFiles()
@@ -35,9 +38,18 @@ namespace AutoDependencyDetector.Logic
             Directory.CreateDirectory( destination );
             var tempFile = Path.Combine( destination, Guid.NewGuid() + ".tmp" );
 
-            using (WebClient webClient = new WebClient())
+            using ( WebClient webClient = new WebClient() )
             {
-                webClient.Credentials = CredentialCache.DefaultNetworkCredentials;
+
+                webClient.Proxy = WebRequest.GetSystemWebProxy();
+
+                if ( string.IsNullOrWhiteSpace( _user ) == false && string.IsNullOrWhiteSpace( _password ) == false )
+                {
+                    // Some proxies may require authentication which is not provided by the credential manager (because it is not the logged in user credentials)
+                    webClient.Proxy.Credentials = new NetworkCredential( _user, _password );
+                }
+             
+
                 await webClient.DownloadFileTaskAsync(new Uri(url), tempFile);
             }
             _extract( tempFile, destination );
