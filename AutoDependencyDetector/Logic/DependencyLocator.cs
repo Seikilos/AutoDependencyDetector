@@ -18,6 +18,13 @@ namespace AutoDependencyDetector.Logic
         public List< string > Excludes { get; } = new List< string >();
         public List<string> Includes { get; } = new List< string >();
 
+        #region Cache
+
+        private bool _listCreated;
+        Dictionary< string, string > _allFiles;
+        
+        #endregion
+
         public DependencyLocator( string dependencyRoot )
         {
             if ( Directory.Exists( dependencyRoot ) == false )
@@ -26,31 +33,14 @@ namespace AutoDependencyDetector.Logic
             }
 
             DependencyRootDirectory = dependencyRoot;
+
+            _listCreated = false;
         }
 
         public Dictionary< string, string > LocateDependencies( IList< string > dependencyNames )
         {
             // Fail if key is duplicated
-            var allFiles = new Dictionary< string, string >();
-
-            foreach ( var file in Directory.GetFiles( DependencyRootDirectory, "*", SearchOption.AllDirectories ) )
-            {
-                // Apply available filters, if string is marked as invalid, do not take it into consideration
-                if ( validAfterFilters( file ) == false)
-                {
-                    continue;
-                }
-
-
-                var key = _normalizeDependencyName( Path.GetFileName( file ) );
-                if ( allFiles.ContainsKey( key ) )
-                {
-                    var existingModule = allFiles[key];
-                    throw new DependencyLocatorException( $"Dependency with the name '{file}' (handle: {key}) already added: '{existingModule}'. Modules are looked up by their handle therefore it must not be duplicated" );
-                }
-                allFiles[ key ] = file;
-            }
-
+            var allFiles = _setupFileList();
             var results = new Dictionary< string, string >();
 
             foreach ( var dep in dependencyNames )
@@ -70,6 +60,37 @@ namespace AutoDependencyDetector.Logic
             }
 
             return results;
+        }
+
+        private Dictionary< string, string > _setupFileList()
+        {
+            if(_listCreated)
+            {
+                return _allFiles;
+            }
+
+            // Fail if key is duplicated
+            _allFiles = new Dictionary< string, string >();
+
+            foreach ( var file in Directory.GetFiles( DependencyRootDirectory, "*", SearchOption.AllDirectories ) )
+            {
+                // Apply available filters, if string is marked as invalid, do not take it into consideration
+                if ( validAfterFilters( file ) == false)
+                {
+                    continue;
+                }
+
+
+                var key = _normalizeDependencyName( Path.GetFileName( file ) );
+                if ( _allFiles.ContainsKey( key ) )
+                {
+                    var existingModule = _allFiles[key];
+                    throw new DependencyLocatorException( $"Dependency with the name '{file}' (handle: {key}) already added: '{existingModule}'. Modules are looked up by their handle therefore it must not be duplicated" );
+                }
+                _allFiles[ key ] = file;
+            }
+
+            return _allFiles;
         }
 
         private bool validAfterFilters( string file )
