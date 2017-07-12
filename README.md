@@ -33,11 +33,13 @@ This software relies on [Dependency Walker]( http://www.dependencywalker.com/) a
 
 Additionally on the first run it creates a default configuration called `config.json` with some default values. Start `AutoDependencyDetector` without any arguments to see all supported arguments.
 
+## Usage
+
 `TODO Usage examples`
 
 # Acknowledgements
 `AutoDependencyDetector` incorporates a set of great technologies which are listed here:
-* [Dependency Walker]( http://www.dependencywalker.com/) – of course (not bundle with this application).
+* [Dependency Walker]( http://www.dependencywalker.com/) – of course (not bundled with this application).
 * [Command Line Parser](https://github.com/gsscoder/commandline) – the best way of dealing with command line arguments.
 * [Json.NET]( http://www.newtonsoft.com/json) from Newtonsoft. 
 
