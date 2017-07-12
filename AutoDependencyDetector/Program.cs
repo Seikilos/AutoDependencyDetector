@@ -19,24 +19,26 @@ namespace AutoDependencyDetector
         {
             try
             {
-
-                var options = new Options();
-                var res =  CommandLine.Parser.Default.ParseArguments( args,options );
-
-                if ( res == false )
-                {
-                    Environment.Exit( 1 );
-                }
-
                 var logger = new ConsoleLogger();
 
                 logger.Info( "Called with {0}", string.Join( " ", args ) );
 
                 logger.Info( "Starting dependency detection" );
 
+                
+                var options = new Options();
+                var res =  CommandLine.Parser.Default.ParseArguments( args,options );
 
+                // See #4, even a start without params should provide the minimum configuration setup, which is config and dependency walker
+                var config = _readConfig( options.Config );
                 var pathOfDependsRoot = _getDependencyWalkerIfMissing( logger, options.ProxyUser, options.ProxyPassword );
 
+
+                if ( res == false )
+                {
+                    Environment.Exit( 1 );
+                }
+              
                 var dd = new DependencyDetector( pathOfDependsRoot );
 
                 IDependencyProvider dependencyProvider = _getDependencyProvider( options );
@@ -44,7 +46,7 @@ namespace AutoDependencyDetector
              
                 var p = new ProcessPipeline(logger,dd, dependencyProvider);
 
-                var config = _readConfig( options.Config );
+        ;
 
                 // Fail fast: Check if configuration is available
                 config.GetConfigurationSet( options.ConfigurationSetName ?? Config.DefaultSetName );
