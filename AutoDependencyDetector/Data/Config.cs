@@ -20,6 +20,8 @@ namespace AutoDependencyDetector.Data
            
             public List<string> ExcludeRegexList { get; set; } = new List< string >();
             public List<string> IncludeRegexList { get; set; } = new List< string >();
+
+            public List<string> AdditionalFiles { get; set; } = new List< string >();
  
         }
 

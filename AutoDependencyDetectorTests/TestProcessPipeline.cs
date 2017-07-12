@@ -153,5 +153,17 @@ namespace AutoDependencyDetectorTests
             Assert.That( () => _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig ), Throws.TypeOf<DependencyLocatorException>(), "AllFilter set should exclude all files" );
 
         }
+
+        [Test]
+        public void Test_that_pipeline_also_copies_additional_data()
+        {
+            _defaultOptions.InputDirectory = DirectoryOfDepAMissingDepB;
+
+            _defaultConfig.ConfigurationSets[ Config.DefaultSetName ].AdditionalFiles.Add( "*.txt" );
+
+            _pipeline.ExecutePipeline( _defaultOptions, _defaultConfig );
+
+            Assert.That( Directory.GetFiles( DirectoryOfDepAMissingDepB, "DependencyB.txt", SearchOption.AllDirectories ), Has.Exactly( 1 ).Items );
+        }
     }
 }

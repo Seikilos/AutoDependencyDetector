@@ -104,6 +104,7 @@
     <Content Include="..\TestData\x86\DependencyB.dll">
       <Link>TestData\x86\DependencyB.dll</Link>
     </Content>
+    <EmbeddedResource Include="TestData\x64\DependencyB.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

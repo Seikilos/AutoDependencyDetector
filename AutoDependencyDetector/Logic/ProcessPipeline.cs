@@ -151,12 +151,39 @@ namespace AutoDependencyDetector.Logic
 
                 var depSourcePath = dependency.Value;
 
+                var destination = Path.Combine( destinationDirectory, Path.GetFileName( depSourcePath ) );
                 // Provide this dependency
-                DependencyProvider.ProvideDependency( depSourcePath, Path.Combine( destinationDirectory, Path.GetFileName( depSourcePath ) ) );
+                DependencyProvider.ProvideDependency( depSourcePath, destination);
 
+                _getAdditionalFilesFor( depSourcePath, destinationDirectory );
             }
 
             return locatedDependencies.Count;
+
+        }
+
+        /// <summary>
+        /// Additional files for given file are also provided
+        /// </summary>
+        /// <param name="sourceFile"></param>
+        /// <param name="destinationDirectory"></param>
+        private void _getAdditionalFilesFor( string sourceFile, string destinationDirectory )
+        {
+            var fi = new FileInfo( sourceFile );
+
+            var nameWithoutExtension = Path.GetFileNameWithoutExtension( fi.Name );
+
+            foreach ( var additionalFile in _getCurrentConfigurationSet().AdditionalFiles )
+            {
+                var files = Directory.GetFiles( Path.Combine( fi.DirectoryName ), $"{nameWithoutExtension}{additionalFile}" );
+                foreach ( var file in files )
+                {
+                    Logger.Info( "Found additional file {0}", file );
+
+                    DependencyProvider.ProvideDependency( file, Path.Combine( destinationDirectory, Path.GetFileName( file ) ) );
+                }
+            }
+
 
         }
 
@@ -164,22 +191,24 @@ namespace AutoDependencyDetector.Logic
         {
             var dl = new DependencyLocator( _options.DependencyDirectory );
 
-            Config.ConfigurationSet cs;
-
-            if ( string.IsNullOrWhiteSpace( _options.ConfigurationSetName ) )
-            {
-                // Try to read default, fail if missing
-                cs = _config.GetConfigurationSet( Config.DefaultSetName );
-            }
-            else
-            {
-                cs = _config.GetConfigurationSet( _options.ConfigurationSetName );
-            }
+            var cs = _getCurrentConfigurationSet();
 
             cs.ExcludeRegexList.ForEach( e => dl.Excludes.Add( e ) );
             cs.IncludeRegexList.ForEach( e => dl.Includes.Add( e ) );
 
             return dl;
+        }
+
+        private Config.ConfigurationSet _getCurrentConfigurationSet()
+        {
+            if ( string.IsNullOrWhiteSpace( _options.ConfigurationSetName ) )
+            {
+                // Try to read default, fail if missing
+                return _config.GetConfigurationSet( Config.DefaultSetName );
+            }
+
+            return _config.GetConfigurationSet( _options.ConfigurationSetName );
+
         }
 
 
