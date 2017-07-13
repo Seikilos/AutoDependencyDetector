@@ -24,7 +24,7 @@ namespace AutoDependencyDetector.Logic
         [Option('d', "dependencies", HelpText = "Directory of dependencies", Required = true)]
         public string DependencyDirectory { get; set; }
 
-        [Option('s', "configsetname", HelpText = "Name of configuration set to use. Allows to handle multiple configurations in one file")]
+        [Option('s', "configsetname", DefaultValue = Data.Config.DefaultSetName, HelpText = "Name of configuration set to use. Allows to handle multiple configurations in one file")]
         public string ConfigurationSetName { get; set; }
 
         [Option('u', "user", HelpText = "For initially obtaining dependency walker behind a proxy")]
@@ -38,6 +38,22 @@ namespace AutoDependencyDetector.Logic
 
         [ParserState]
         public IParserState LastParserState { get; set; }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            const int firstLine = -25;
+
+            sb.AppendLine( $"{"Input:",firstLine} {InputDirectory}" );
+            sb.AppendLine( $"{"Recurse into sub dirs:",firstLine} {RecurseInput}" );
+            sb.AppendLine( $"{"DependencyDirectory:",firstLine} {DependencyDirectory}" );
+            sb.AppendLine( $"{"Configuration:",firstLine} {Config??"not set"}" );
+            sb.AppendLine( $"{"Configuration Set Name:",firstLine} {ConfigurationSetName}" );
+            sb.AppendLine( $"{"Write file list:",firstLine} {CreateFileList??"no"}" );
+            
+            return sb.ToString().Trim();
+        }
 
 
         [HelpOption]

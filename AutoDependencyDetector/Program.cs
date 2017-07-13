@@ -21,13 +21,16 @@ namespace AutoDependencyDetector
             {
                 var logger = new ConsoleLogger();
 
-                logger.Info( "Called with {0}", string.Join( " ", args ) );
-
-                logger.Info( "Starting dependency detection" );
-
+               
                 
                 var options = new Options();
                 var res =  CommandLine.Parser.Default.ParseArguments( args,options );
+
+                logger.Info( "Starting dependency detection" );
+
+                _dumpOptions( logger, options );
+
+                return;
 
                 // See #4, even a start without params should provide the minimum configuration setup, which is config and dependency walker
                 var config = _readConfig( options.Config );
@@ -62,6 +65,15 @@ namespace AutoDependencyDetector
                 Console.WriteLine( e.ToString() );
                 Environment.Exit( 1 );
             }
+        }
+
+        private static void _dumpOptions( ILogger logger, Options options )
+        {
+            var divider = new string('*',40 );
+            logger.Info( divider );
+            logger.Info( options.ToString() );
+            logger.Info( divider );
+            
         }
 
         private static IDependencyProvider _getDependencyProvider( Options options )
