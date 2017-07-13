@@ -21,7 +21,6 @@ namespace AutoDependencyDetector
             {
                 var logger = new ConsoleLogger();
 
-               
                 
                 var options = new Options();
                 var res =  CommandLine.Parser.Default.ParseArguments( args,options );
@@ -32,6 +31,7 @@ namespace AutoDependencyDetector
 
                 // See #4, even a start without params should provide the minimum configuration setup, which is config and dependency walker
                 var config = _readConfig( options.Config );
+
                 var pathOfDependsRoot = _getDependencyWalkerIfMissing( logger, options.ProxyUser, options.ProxyPassword );
 
 
@@ -101,15 +101,26 @@ namespace AutoDependencyDetector
 
             logger.Warn( "Detected missing dependency walker. Trying to obtain" );
             // Missing depends. Download
-            var dwo = new DependencyWalkerObtainer( finalDir,proxyUser, proxyPassword );
+            var dwo = new DependencyWalkerObtainer( finalDir, proxyUser, proxyPassword );
 
-            dwo.DownloadFiles().Wait();
-
-            var fileCount = Directory.GetFiles( finalDir, "*.exe", SearchOption.AllDirectories ).Length;
-            if ( fileCount != 2 )
+            try
             {
-                throw new InvalidOperationException( $"Failed to obtain dependency walker. Expected two executables to find in {finalDir}, found {fileCount}" );
+
+                dwo.DownloadFiles().Wait();
+                var fileCount = Directory.GetFiles( finalDir, "*.exe", SearchOption.AllDirectories ).Length;
+                if ( fileCount != 2 )
+                {
+                    // Remove directory because this would prevent a download next time
+                    throw new InvalidOperationException( $"Failed to obtain dependency walker. Expected two executables to find in {finalDir}, found {fileCount}" );
+                }
             }
+            catch ( Exception )
+            {
+                Directory.Delete( finalDir, true );
+                throw;
+            }
+
+
             logger.Info( "Successfully obtained dependency walker" );
 
             return finalDir;
