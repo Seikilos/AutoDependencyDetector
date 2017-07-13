@@ -100,7 +100,7 @@ namespace AutoDependencyDetector
             {
                 throw new InvalidOperationException( $"Failed to obtain dependency walker. Expected two executables to find in {finalDir}, found {fileCount}" );
             }
-            logger.Info( "Successfully obtain dependency walker" );
+            logger.Info( "Successfully obtained dependency walker" );
 
             return finalDir;
         }
