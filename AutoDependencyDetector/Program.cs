@@ -30,8 +30,6 @@ namespace AutoDependencyDetector
 
                 _dumpOptions( logger, options );
 
-                return;
-
                 // See #4, even a start without params should provide the minimum configuration setup, which is config and dependency walker
                 var config = _readConfig( options.Config );
                 var pathOfDependsRoot = _getDependencyWalkerIfMissing( logger, options.ProxyUser, options.ProxyPassword );
